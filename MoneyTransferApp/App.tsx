@@ -93,12 +93,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginVertical: 8,
   },
-  textBorder: {
-    borderWidth: 1,
-    borderColor: "black",
-    fontSize: 10,
-    padding: 10,
-  },
   checkBox: {
     marginRight: 50,
   },
