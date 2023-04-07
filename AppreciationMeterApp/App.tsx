@@ -23,7 +23,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.appBar}>
-        <Text style={styles.appBarText}>YEMEK SİPARİŞİ</Text>
+        <Text style={styles.appBarText}>TAKDİRMETRE</Text>
       </View>
       <View style={styles.row}>
         <Text>Çalıştığım Süre: </Text>
