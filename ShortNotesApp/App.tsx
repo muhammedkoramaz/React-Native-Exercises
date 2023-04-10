@@ -1,33 +1,17 @@
-import {
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
+import FilterArea from "./src/components/FilterArea";
+import NotesArea from "./src/components/NotesArea";
+import SearchAndFilter from "./src/components/SearchAndFilter";
 import { StatusBar } from "expo-status-bar";
+import styles from "./src/styles/Style";
 import { useState } from "react";
 
-// ! TODO : boş stringleri hiç ekleme ve filtreleme yapma
-// ! TODO : Metrics ve Colors dosyalarını oluştur
-// ! TODO : Flatlist için keyExtractor kullan
-// ! TODO : Flatlist için data propunu ayrı bir dosyada oluştur
-// ! TODO : Her component için ayrı bir dosya oluştur
-// ! TODO : Designi düzelt
-const ItemSeparatorView = () => {
+const Header = () => {
   return (
-    //Item Separator
-    <View
-      style={{
-        height: 1,
-        marginLeft: 20,
-        marginRight: 20,
-        backgroundColor: "black",
-      }}
-    />
+    <View style={styles.appBar}>
+      <Text style={styles.appBarText}>KISA NOTLAR</Text>
+    </View>
   );
 };
 
@@ -37,6 +21,8 @@ export default function App() {
   const [filterWord, setFilterWord] = useState("");
   const [taskList, setTaskList] = useState([] as string[]);
   const [filtersVisible, setFiltersVisible] = useState(false);
+  const [isSelectZA, setIsSelectZA] = useState(false);
+  const [isSelectAZ, setIsSelectAZ] = useState(false);
 
   const handleAddTask = () => {
     setTaskList([...taskList, task]);
@@ -71,70 +57,33 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.appBar}>
-        <Text style={styles.appBarText}>KISA NOTLAR</Text>
-      </View>
+      <Header />
       <View style={styles.column}>
-        <TextInput
-          style={styles.textInput}
-          onChangeText={(task: string) => {
-            setTask(task);
-          }}
-          value={task}
-          placeholder="Not Yazın..."
+        <SearchAndFilter
+          task={task}
+          setTask={setTask}
+          handleAddTask={handleAddTask}
+          filtersVisible={filtersVisible}
+          setFiltersVisible={setFiltersVisible}
         />
-        <TouchableOpacity style={styles.button} onPress={handleAddTask}>
-          <Text style={styles.buttonText}>EKLE</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.filterView}
-          onPress={() => setFiltersVisible(!filtersVisible)}
-        >
-          <Text style={filtersVisible ? styles.filterTextClicked : styles.filterText}>{filtersVisible ? "Fitreleri gizle": "Filtreleri göster"}</Text>
-        </TouchableOpacity>
         {filtersVisible && (
-          <View>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={(keyword: string) => {
-                setKeyword(keyword);
-              }}
-              value={keyword}
-              placeholder="Aranacak Metin..."
-            />
-            <View style={styles.row}>
-              <Text style={styles.sortingText}>Alfabetik Sırala:</Text>
-              <View style={styles.sortingButtonView}>
-                <TouchableOpacity
-                  style={styles.sortingButton}
-                  onPress={() => sortByAscending()}
-                >
-                  <Text style={styles.sortingButtonText}>Artan</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.sortingButton}
-                  onPress={() => sortByDescending()}
-                >
-                  <Text style={styles.sortingButtonText}>Azalan</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setFilterWord(keyword)}
-            >
-              <Text style={styles.buttonText}>Filtrele</Text>
-            </TouchableOpacity>
-          </View>
+          <FilterArea
+            keyword={keyword}
+            setKeyword={setKeyword}
+            sortByAscending={sortByAscending}
+            sortByDescending={sortByDescending}
+            setFilterWord={setFilterWord}
+            isSelectAZ={isSelectAZ}
+            isSelectZA={isSelectZA}
+            setIsSelectAZ={setIsSelectAZ}
+            setIsSelectZA={setIsSelectZA}
+          />
         )}
-
         <View style={styles.divider}></View>
         <Text style={styles.notesText}>Notlar</Text>
-        <FlatList
-          data={postListFiltered}
-          renderItem={_renderItem}
-          keyExtractor={(item) => item + Math.random() + Date.now()} // ! TODO : unique key
-          ItemSeparatorComponent={ItemSeparatorView}
+        <NotesArea
+          postListFiltered={postListFiltered}
+          _renderItem={_renderItem}
         />
       </View>
 
@@ -142,130 +91,3 @@ export default function App() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-    paddingTop: 32,
-    flexDirection: "column",
-  },
-  appBar: {
-    backgroundColor: "white",
-    width: "100%",
-    height: 75,
-    justifyContent: "center",
-    alignItems: "center",
-    borderBottomColor: "black",
-    borderBottomWidth: 1,
-  },
-  filterTextClicked: {
-    flexDirection: "row-reverse",
-    fontSize: 15,
-    textAlign: "left",
-    fontWeight: "bold",
-    color: "#CA4528",
-    textDecorationLine: "underline",
-  },
-  appBarText: {
-    color: "black",
-    fontSize: 25,
-    fontWeight: "bold",
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginHorizontal: 16,
-    marginVertical: 8,
-  },
-  checkBox: {
-    marginRight: 50,
-  },
-  column: {
-    flexDirection: "column",
-  },
-  textInput: {
-    height: 40,
-    marginTop: 20,
-    marginLeft: 30,
-    padding: 10,
-    width: 330,
-    borderRadius: 10,
-    backgroundColor: "#E4EFED",
-  },
-  button: {
-    backgroundColor: "#447970",
-    color: "white",
-    height: 41,
-    marginTop: 20,
-    marginLeft: 30,
-    width: 330,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  divider: {
-    borderBottomColor: "black",
-    borderBottomWidth: 1,
-    width: 750,
-    height: 1,
-    marginTop: 10,
-  },
-  item: {
-    padding: 10,
-    fontSize: 15,
-    fontWeight: "bold",
-  },
-  filterView: {
-    alignItems: "flex-end",
-    paddingRight: 15,
-  },
-  filterText: {
-    flexDirection: "row-reverse",
-    fontSize: 15,
-    textAlign: "left",
-    fontWeight: "bold",
-    color: "#43736A",
-    textDecorationLine: "underline",
-  },
-
-  sortingText: {
-    fontSize: 15,
-    textAlign: "left",
-    fontWeight: "bold",
-    color: "#43736A",
-    paddingLeft: 13,
-  },
-  sortingButtonView: {
-    flexDirection: "row",
-    paddingRight: 10,
-  },
-  sortingButton: {
-    backgroundColor: "#447970",
-    color: "white",
-    height: 30,
-    width: 65,
-    borderRadius: 10,
-    marginRight: 8,
-  },
-  sortingButtonText: {
-    color: "white",
-    fontSize: 13,
-    textAlign: "center",
-    margin: 6,
-  },
-  notesText: {
-    fontSize: 18,
-    textAlign: "left",
-    fontWeight: "bold",
-    color: "#000000",
-    padding: 10,
-  },
-});
